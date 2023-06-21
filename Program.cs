@@ -4,24 +4,9 @@ class Program
 {
     static int score = 0;
 
-    static char[,] PlayingField =
-    {
-        { '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#' },
-        { '#', ' ', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#' },
-        { '#', '.', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '.', '.', '#' },
-        { '#', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#', '.', '.', '#' },
-        { '#', '.', '#', '.', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '.', '#', '.', '.', '#' },
-        { '#', '.', '#', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#', '.', '.', '#' },
-        { '#', '.', '#', '.', '#', '.', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '.', '#' },
-        { '#', '.', '#', '.', '#', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#' },
-        { '#', '.', '#', '.', '#', '.', '#', '.', '#', '#', '#', '.', '#', '#', '#', '#', '#', '#', '.', '#' },
-        { '#', '.', '#', '.', '.', '.', '#', '.', '#', '.', '#', '.', '#', '.', '.', '.', '.', '.', '.', '#' },
-        { '#', '.', '#', '.', '#', '#', '#', '.', '#', '.', '#', '.', '#', '.', '#', '#', '#', '#', '.', '#' },
-        { '#', '.', '#', '.', '.', '.', '.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '#', '.', '#' },
-        { '#', '.', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '.', '#' },
-        { '#', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '#' },
-        { '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#' }
-    };
+    static char[,] PlayingField;
+    static int width = 20;
+    static int height = 15;
 
     static int pacmanX = 1;
     static int pacmanY = 1;
@@ -48,10 +33,11 @@ class Program
         Console.ReadKey();
         Console.Clear();
 
+        GeneratePlayingField();
+        DisplayPlayingField();
+
         while (true)
         {
-            DisplayPlayingField();
-
             ConsoleKeyInfo keyInfo = Console.ReadKey(true);
             ConsoleKey key = keyInfo.Key;
 
@@ -87,13 +73,35 @@ class Program
         }
     }
 
+    static void GeneratePlayingField()
+    {
+        PlayingField = new char[height, width];
+
+        Random random = new Random();
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                if (i == 0 || i == height - 1 || j == 0 || j == width - 1)
+                {
+                    PlayingField[i, j] = '#';
+                }
+                else
+                {
+                    PlayingField[i, j] = random.Next(5) == 0 ? '#' : '.';
+                }
+            }
+        }
+    }
+
     static void DisplayPlayingField()
     {
         Console.SetCursorPosition(0, 0);
 
-        for (int i = 0; i < PlayingField.GetLength(0); i++)
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j < PlayingField.GetLength(1); j++)
+            for (int j = 0; j < width; j++)
             {
                 if (i == pacmanX && j == pacmanY)
                 {
@@ -151,10 +159,18 @@ class Program
         MoveGhost(ref ghost3X, ref ghost3Y);
         MoveGhost(ref ghost4X, ref ghost4Y);
         MoveGhost(ref ghost5X, ref ghost5Y);
+
+        DisplayPlayingField();
     }
 
     static void MoveGhost(ref int ghostX, ref int ghostY)
     {
+        if (ghostX == pacmanX && ghostY == pacmanY)
+        {
+            GameOver();
+            return;
+        }
+
         Random random = new Random();
         int route = random.Next(1, 5);
 
@@ -195,4 +211,3 @@ class Program
         Environment.Exit(0);
     }
 }
-
